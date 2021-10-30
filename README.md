@@ -14,7 +14,7 @@
 
 * yang penting untuk dilakukanadalah, menulis `iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 192.199.0.0/16` di router `Foosha` agar lalu lintas data dapat berjalan.
 setelah itu ketikkan `cat /etc/resolv.conf` dan ganti namaserver menjadi `nameserver 192.168.122.1` agar dapat terhubung ke internet. ketikkan `echo nameserver 192.168.122.1 > /etc/resolv.conf` di node yang lain dan isi nameserver dengan IP Foosha yang telah kita ganti, ini dilakukan agar node yang lain dapat mengakses internet juga.
-* cara mengecek apakah sudah terhubung apap tidak adalah denagn men-ping google pada semua node.
+* cara mengecek apakah sudah terhubung apap tidak adalah dengan men-ping google pada semua node.
 
 ![1-A](https://cdn.discordapp.com/attachments/804405775988555776/903941785011748884/unknown.png)
 ![1-B](https://cdn.discordapp.com/attachments/804405775988555776/903941799301750845/unknown.png)
@@ -74,13 +74,13 @@ Tambahkan reverse dari 3 byte awal dari IP yang ingin dilakukan Reverse DNS. Kar
 
 ``zone "2.199.192.in-addr.arpa" {
     type master;
-    file "/etc/bind/jarkom/2.199.192.in-addr.arpa";
+    file "/etc/bind/kaizoku/2.199.192.in-addr.arpa";
 };``
 
 ![4-A](https://cdn.discordapp.com/attachments/804405775988555776/903921179507699722/unknown.png)
 
 * Copykan file db.local pada path /etc/bind ke dalam folder shiftmodul2 yang baru saja dibuat dan ubah namanya menjadi 2.40.10.in-addr.arpa
-`cp /etc/bind/db.local /etc/bind/jarkom/2.40.10.in-addr.arpa`
+`cp /etc/bind/db.local /etc/bind/kaizoku/2.40.10.in-addr.arpa`
 
 * Edit file 2.199.192.in-addr.arpa seperti berikut 
 
@@ -188,7 +188,7 @@ cp /etc/bind/db.local /etc/bind/sunnygo/mecha.franky.d15.com``
 
 * Lakukan restart service bind `service bind9 restart`
 
-* Coba ping di server Loguetown ping general.mecha.frank.d15.com
+* Coba ping di server Loguetown ping general.mecha.franky.d15.com
 
 ![7-B](https://cdn.discordapp.com/attachments/804405775988555776/903931459155415081/unknown.png)
 
