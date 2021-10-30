@@ -15,8 +15,13 @@
 * yang penting untuk dilakukanadalah, menulis `iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 192.199.0.0/16` di router `Foosha` agar lalu lintas data dapat berjalan.
 setelah itu ketikkan `cat /etc/resolv.conf` dan ganti namaserver menjadi `nameserver 192.168.122.1` agar dapat terhubung ke internet. ketikkan `echo nameserver 192.168.122.1 > /etc/resolv.conf` di node yang lain dan isi nameserver dengan IP Foosha yang telah kita ganti, ini dilakukan agar node yang lain dapat mengakses internet juga.
 * cara mengecek apakah sudah terhubung apap tidak adalah denagn men-ping google pada semua node.
-* (gambar)
 
+![1-A](https://cdn.discordapp.com/attachments/804405775988555776/903941785011748884/unknown.png)
+![1-B](https://cdn.discordapp.com/attachments/804405775988555776/903941799301750845/unknown.png)
+![1-C](https://cdn.discordapp.com/attachments/804405775988555776/903941814564823100/unknown.png)
+![1-D](https://cdn.discordapp.com/attachments/804405775988555776/903941828888379442/unknown.png)
+![1-E](https://cdn.discordapp.com/attachments/804405775988555776/903941865143947264/unknown.png)
+![1-F](https://cdn.discordapp.com/attachments/804405775988555776/903942218082033694/unknown.png)
 
 ### 2. Luffy ingin menghubungi Franky yang berada di EniesLobby dengan denden mushi. Kalian diminta Luffy untuk membuat website utama dengan mengakses franky.yyy.com dengan alias www.franky.yyy.com pada folder kaizoku
 
@@ -25,29 +30,33 @@ setelah itu ketikkan `cat /etc/resolv.conf` dan ganti namaserver menjadi `namese
 * Isikan configurasi domain franky.d15.com sesuai dengan syntax berikut:
 ``zone "franky.d15.com" {
 	type master;
-	file "/etc/bind/jarkom/franky.d15.com";
+	file "/etc/bind/kaizoku/franky.d15.com";
 };``
-(gambar)
+
+![2-A](https://cdn.discordapp.com/attachments/804405775988555776/903938805466275860/unknown.png)
 
 * Buka folder kaizoku di dalam `/etc/bind` : `mkdir /etc/bind/kaizoku`
 
 * Copykan file db.local pada path /etc/bind ke dalam folder kaizoku yang baru saja dibuka dari zip dan ubah namanya menjadi franky.d15.com `cp /etc/bind/db.local /etc/bind/kaizoku/franky.d15.com`
 
 * Kemudian buka file franky.d15.com dan edit seperti gambar berikut dengan IP EniesLobby masing-masing kelompok: `vim /etc/bind/jarkom/franky.d15.com`
-(gambar)
+  
+![2-B](https://cdn.discordapp.com/attachments/763031958983933953/903939987077214208/unknown.png)
 
 * untuk membuat CNAME, Buka file franky.d15.com pada server EniesLobby dan tambahkan konfigurasi seperti pada gambar berikut:
-(gambar)
+  
+![2-C](https://cdn.discordapp.com/attachments/804405775988555776/903938191709593610/unknown.png)
 
 * Restart bind9 dengan perintah `service bind9 restart`
 
 
 ### 3. Setelah itu buat subdomain super.franky.yyy.com dengan alias www.super.franky.yyy.com yang diatur DNS nya di EniesLobby dan mengarah ke Skypie
 
-* Edit file `/etc/bind/jarkom/franky.d15.com` lalu tambahkan subdomain untuk `super.franky.d15.com` yang mengarah ke IP Water7. `vim /etc/bind/jarkom/jarkom2021.com`
+* Edit file `/etc/bind/kaizoku/franky.d15.com` lalu tambahkan subdomain untuk `super.franky.d15.com` yang mengarah ke IP Water7. `vim /etc/bind/kaizoku/franky.d15.com`
 
 * Tambahkan konfigurasi seperti pada gambar ke dalam file `franky.d15.com.`
-(gambar)
+
+![3-A](https://cdn.discordapp.com/attachments/804405775988555776/903937162918133810/unknown.png)
 
 * Restart bind9 dengan perintah `service bind9 restart`
 
@@ -56,30 +65,33 @@ setelah itu ketikkan `cat /etc/resolv.conf` dan ganti namaserver menjadi `namese
 ``ping super.franky.d15.com
 ATAU
 host -t A super.franky.d15.com``
-(gambar)
 
+![3-B](https://cdn.discordapp.com/attachments/804405775988555776/903935239741661184/unknown.png)
 
 ### 4. Buat juga reverse domain untuk domain utama 
 * Mengubah isi dari file /etc/bind/named.conf.local pada server EniesLobby dan menambahkan konfigurasi seperti berikut : `vim /etc/bind/named.conf.local`
 Tambahkan reverse dari 3 byte awal dari IP yang ingin dilakukan Reverse DNS. Karena di contoh menggunakan IP 10.40.2 untuk IP dari records, maka reversenya adalah 2.40.10
 
-``zone "2.40.10.in-addr.arpa" {
+``zone "2.199.192.in-addr.arpa" {
     type master;
-    file "/etc/bind/jarkom/2.40.10.in-addr.arpa";
+    file "/etc/bind/jarkom/2.199.192.in-addr.arpa";
 };``
-(gambar halaman conf nya)
+
+![4-A](https://cdn.discordapp.com/attachments/804405775988555776/903921179507699722/unknown.png)
 
 * Copykan file db.local pada path /etc/bind ke dalam folder shiftmodul2 yang baru saja dibuat dan ubah namanya menjadi 2.40.10.in-addr.arpa
 `cp /etc/bind/db.local /etc/bind/jarkom/2.40.10.in-addr.arpa`
 
-* Edit file 77.151.10.in-addr.arpa seperti berikut 
-(gambar)
+* Edit file 2.199.192.in-addr.arpa seperti berikut 
+
+![4-B](https://cdn.discordapp.com/attachments/804405775988555776/903923722275127316/unknown.png)
 
 * Kemudian restart bind9 dengan perintah `service bind9 restart`
 
 * Untuk mengecek apakah konfigurasi sudah benar atau belum, lakukan perintah berikut pada client Loguetown
-`host -t PTR "IP EniesLobby`
+`host -t PTR 192.199.2.2`
 
+![4-C](https://cdn.discordapp.com/attachments/804405775988555776/903924966532202526/unknown.png)
 
 ### 5. Supaya tetap bisa menghubungi Franky jika server EniesLobby rusak, maka buat Water7 sebagai DNS Slave untuk domain utama
 
@@ -89,11 +101,11 @@ Tambahkan reverse dari 3 byte awal dari IP yang ingin dilakukan Reverse DNS. Kar
 `zone "franky.d15.com" {
     type master;
     notify yes;
-    also-notify { "IP Water7"; }; // Masukan IP Water7 tanpa tanda petik
-    allow-transfer { "IP Water7"; }; // Masukan IP Water7 tanpa tanda petik
-    file "/etc/bind/jarkom/franky.d15.com";
+    also-notify { 199.192.2.3; }; // Masukan IP Water7 tanpa tanda petik
+    allow-transfer { 192.199.2.3; }; // Masukan IP Water7 tanpa tanda petik
+    file "/etc/bind/kaizoku/franky.d15.com";
 };`
-(gambar)
+![5-D](https://cdn.discordapp.com/attachments/804405775988555776/903925867493863464/unknown.png)
 
 * Lakukan restart bind9 `service bind9 restart`
 
@@ -106,35 +118,43 @@ Tambahkan reverse dari 3 byte awal dari IP yang ingin dilakukan Reverse DNS. Kar
 
 ``zone "franky.d15.com" {
     type slave;
-    masters { "IP EniesLobby"; }; // Masukan IP EniesLobby tanpa tanda petik
+    masters { 192.199.2.2; }; // Masukan IP EniesLobby tanpa tanda petik
     file "/var/lib/bind/franky.d15.com";
 };``
-(gambar)
+![5-E](https://cdn.discordapp.com/attachments/804405775988555776/903927798232645632/unknown.png)
 
 * Lakukan restart bind9 `service bind9 restart`
+
+* Lalu stop bind9 pada Ennieslobby dengan `service bind9 stop` untuk mengecek apakah dns slave berhasil dilakukan
+
+* Lalu gunakan command `ping franky.d15.com` pada Loguetown untuk memastikan bahwa masih bisa terhubung ke `franky.d15.com` walaupun DNS Master (EniesLobby) telah mati. Jika konfigurasi berhasil maka akan muncul tampilan sebagai berikut
+  
+![5-F](https://cdn.discordapp.com/attachments/804405775988555776/903928509750210560/unknown.png)
 
 ### 6. Setelah itu terdapat subdomain mecha.franky.yyy.com dengan alias www.mecha.franky.yyy.com yang didelegasikan dari EniesLobby ke Water7 dengan IP menuju ke Skypie dalam folder sunnygo
 
 #### Konfigurasi pada EniesLobby
-* Pada EniesLobby, edit file /etc/bind/jarkom/franky.d15.com.com dan ubah menjadi seperti di bawah ini sesuai dengan pembagian IP EniesLobby kelompok masing-masing.
-`vim /etc/bind/jarkom/franky.d15.com`
-(gambar)
+* Pada EniesLobby, edit file /etc/bind/kaizoku/franky.d15.com.com dan ubah menjadi seperti di bawah ini sesuai dengan pembagian IP EniesLobby kelompok masing-masing.
+`vim /etc/bind/kaizoku/franky.d15.com`
+
+![6-A](https://cdn.discordapp.com/attachments/804405775988555776/903929106855505970/unknown.png)
 
 * Kemudian edit file /etc/bind/named.conf.options pada EniesLobby.
 `vim /etc/bind/named.conf.options`
-(gambar)
 
 * Kemudian comment dnssec-validation auto; dan tambahkan baris berikut pada /etc/bind/named.conf.options `allow-query{any;};`
 (gambar)
+
+![6-B](https://cdn.discordapp.com/attachments/804405775988555776/903929382484209674/unknown.png)
 
 * Kemudian edit file /etc/bind/named.conf.local menjadi seperti gambar di bawah:
 
 ``zone "franky.d15.com" {
     type master;
-    file "/etc/bind/jarkom/franky.d15.com";
-    allow-transfer { "IP Water7"; }; // Masukan IP Water7 tanpa tanda petik
+    file "/etc/bind/kaizoku/franky.d15.com";
+    allow-transfer { 192.199.2.3; }; // Masukan IP Water7 tanpa tanda petik
 };``
-(gambar)
+![6-C](https://cdn.discordapp.com/attachments/804405775988555776/903929929807310889/unknown.png)
 
 * Setelah itu restart bind9 `service bind9 restart`
 
@@ -144,14 +164,16 @@ Tambahkan reverse dari 3 byte awal dari IP yang ingin dilakukan Reverse DNS. Kar
 
 * Kemudian comment dnssec-validation auto; dan tambahkan baris berikut pada /etc/bind/named.conf.options `allow-query{any;};`
 * Lalu edit file /etc/bind/named.conf.local menjadi seperti gambar di bawah:
-(gamabr)
+  
+![6-D](https://cdn.discordapp.com/attachments/804405775988555776/903930231079985172/unknown.png)
 
-* Kemudian buat direktori dengan nama delegasi, Copy db.local ke direktori delegasi dan edit namanya menjadi mecha.franky.d15.com
-``mkdir /etc/bind/delegasi
-cp /etc/bind/db.local /etc/bind/delegasi/its.jarkom2021.com``
+* Kemudian buat direktori dengan nama sunnygo, Copy db.local ke direktori sunnygo dan edit namanya menjadi mecha.franky.d15.com
+``mkdir /etc/bind/sunnygo
+cp /etc/bind/db.local /etc/bind/sunnygo/mecha.franky.d15.com``
 
 * Kemudian edit file mecha.franky.d15.com menjadi seperti dibawah ini
-(gamabr)
+  
+![6-E](https://cdn.discordapp.com/attachments/804405775988555776/903930691203522580/unknown.png)
 
 * Restart bind9 `service bind9 restart`
 
@@ -160,14 +182,15 @@ cp /etc/bind/db.local /etc/bind/delegasi/its.jarkom2021.com``
 
 #### Konfigurasi di server EniesLobby
 
-* Mengubah isi dari file /etc/bind/delegasi/general.mecha.frank.d15.com seperti gambar berikut :
-(gambar)
+* Mengubah isi dari file /etc/bind/sunnygo/mecha.franky.d15.com seperti gambar berikut :
+
+![7-A](https://cdn.discordapp.com/attachments/804405775988555776/903931175096160316/unknown.png)
 
 * Lakukan restart service bind `service bind9 restart`
 
 * Coba ping di server Loguetown ping general.mecha.frank.d15.com
-(gambar)
 
+![7-B](https://cdn.discordapp.com/attachments/804405775988555776/903931459155415081/unknown.png)
 
 ### 8. Setelah melakukan konfigurasi server, maka dilakukan konfigurasi Webserver. Pertama dengan webserver www.franky.yyy.com. Pertama, luffy membutuhkan webserver dengan DocumentRoot pada /var/www/franky.yyy.com.
 
@@ -179,25 +202,24 @@ cp /etc/bind/db.local /etc/bind/delegasi/its.jarkom2021.com``
 
 * Pindah ke direktori /etc/apache2/sites-available dan copy file 000-default.conf dan rename dengan nama franky.d15.com.
 `cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/franky.d15.com.conf`
-(gambar)
 
 * Edit file franky.d15.com.conf
-(gambar)
+  
+![8-A](https://cdn.discordapp.com/attachments/804405775988555776/903931968025157632/unknown.png)
 
 * aktifkan dengan command `a2ensite franky.d15.com.`
 
 * Pindah ke direktori /var/www/
 
-* Download file website dengan cara `wget [IP]/franky.com.zip`
+* Download file website dengan cara `wget https://github.com/FeinardSlim/Praktikum-Modul-2-Jarkom/raw/main/franky.zip`
 
-* Unzip file yang sudah didownload dan ganti nama file
-(gambar)
+* Unzip file yang sudah didownload
 
 * Restart apache : `service apache2 restart`
 
-* Ketika franky.d15.com. diakses, akan menampilkan seperti di gambar berikut
-(gambar)
+* Ketika franky.d15.com. diakses client, akan menampilkan seperti di gambar berikut
 
+![8-B](https://cdn.discordapp.com/attachments/804405775988555776/903934712291131443/unknown.png)
 
 ### 9. Setelah itu, Luffy juga membutuhkan agar url www.franky.yyy.com/index.php/home dapat menjadi menjadi www.franky.yyy.com/home.
 
@@ -206,6 +228,7 @@ cp /etc/bind/db.local /etc/bind/delegasi/its.jarkom2021.com``
 ![9-A](https://cdn.discordapp.com/attachments/804405775988555776/903846951760580728/Screenshot_7.png)
 
 * Nantinya secara otomatis ketika kita mengetikkan super.franky.d15.com/home maka akan diarahkan untuk membuka file `home.html` yang berada pada `/var/www/franky.d15.com/home.html` untuk megeceknya kita gunakan command `lynx franky.d15.com/home` pada Loguetown. Jika berhasil akan tampil seperti berikut
+  
 ![9-B](https://cdn.discordapp.com/attachments/804405775988555776/903850393845510205/Untitled.png)
 
 ### 10. Setelah itu, pada subdomain www.super.franky.yyy.com, Luffy membutuhkan penyimpanan aset yang memiliki DocumentRoot pada /var/www/super.franky.yyy.com .
