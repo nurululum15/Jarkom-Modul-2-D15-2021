@@ -12,7 +12,28 @@
 
 ### 1. EniesLobby akan dijadikan sebagai DNS Master, Water7 akan dijadikan DNS Slave, dan Skypie akan digunakan sebagai Web Server. Terdapat 2 Client yaitu Loguetown, dan Alabasta. Semua node terhubung pada router Foosha, sehingga dapat mengakses internet
 
+* yang penting untuk dilakukanadalah, menulis `iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 192.199.0.0/16` di router `Foosha` agar lalu lintas data dapat berjalan.
+setelah itu ketikkan `cat /etc/resolv.conf` dan ganti namaserver menjadi `nameserver 192.168.122.1` agar dapat terhubung ke internet. ketikkan `echo nameserver 192.168.122.1 > /etc/resolv.conf` di node yang lain dan isi nameserver dengan IP Foosha yang telah kita ganti, ini dilakukan agar node yang lain dapat mengakses internet juga.
+* cara mengecek apakah sudah terhubung apap tidak adalah denagn men-ping google pada semua node.
+* (gambar)
+
 ### 2. Luffy ingin menghubungi Franky yang berada di EniesLobby dengan denden mushi. Kalian diminta Luffy untuk membuat website utama dengan mengakses franky.yyy.com dengan alias www.franky.yyy.com pada folder kaizoku
+
+* Lakukan perintah pada EniesLobby. Isikan seperti berikut: `nano /etc/bind/named.conf.local`
+
+* Isikan configurasi domain franky.d15.com sesuai dengan syntax berikut:
+``zone "franky.d15.com" {
+	type master;
+	file "/etc/bind/jarkom/franky.d15.com";
+};``
+
+* Buat folder kaizoku di dalam `/etc/bind` : `mkdir /etc/bind/kaizoku`
+
+* Copykan file db.local pada path /etc/bind ke dalam folder kaizoku yang baru saja dibuka dari zip dan ubah namanya menjadi franky.d15.com `cp /etc/bind/db.local /etc/bind/kaizoku/franky.d15.com`
+
+* Kemudian buka file franky.d15.com dan edit seperti gambar berikut dengan IP EniesLobby masing-masing kelompok: `vim /etc/bind/jarkom/franky.d15.com`
+
+* Restart bind9 dengan perintah `service bind9 restart`
 
 ### 3. Setelah itu buat subdomain super.franky.yyy.com dengan alias www.super.franky.yyy.com yang diatur DNS nya di EniesLobby dan mengarah ke Skypie
 
