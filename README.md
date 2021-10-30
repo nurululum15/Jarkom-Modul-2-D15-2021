@@ -17,6 +17,7 @@ setelah itu ketikkan `cat /etc/resolv.conf` dan ganti namaserver menjadi `namese
 * cara mengecek apakah sudah terhubung apap tidak adalah denagn men-ping google pada semua node.
 * (gambar)
 
+
 ### 2. Luffy ingin menghubungi Franky yang berada di EniesLobby dengan denden mushi. Kalian diminta Luffy untuk membuat website utama dengan mengakses franky.yyy.com dengan alias www.franky.yyy.com pada folder kaizoku
 
 * Lakukan perintah pada EniesLobby. Isikan seperti berikut: `nano /etc/bind/named.conf.local`
@@ -26,26 +27,177 @@ setelah itu ketikkan `cat /etc/resolv.conf` dan ganti namaserver menjadi `namese
 	type master;
 	file "/etc/bind/jarkom/franky.d15.com";
 };``
+(gambar)
 
-* Buat folder kaizoku di dalam `/etc/bind` : `mkdir /etc/bind/kaizoku`
+* Buka folder kaizoku di dalam `/etc/bind` : `mkdir /etc/bind/kaizoku`
 
 * Copykan file db.local pada path /etc/bind ke dalam folder kaizoku yang baru saja dibuka dari zip dan ubah namanya menjadi franky.d15.com `cp /etc/bind/db.local /etc/bind/kaizoku/franky.d15.com`
 
 * Kemudian buka file franky.d15.com dan edit seperti gambar berikut dengan IP EniesLobby masing-masing kelompok: `vim /etc/bind/jarkom/franky.d15.com`
+(gambar)
+
+* untuk membuat CNAME, Buka file franky.d15.com pada server EniesLobby dan tambahkan konfigurasi seperti pada gambar berikut:
+(gambar)
 
 * Restart bind9 dengan perintah `service bind9 restart`
 
+
 ### 3. Setelah itu buat subdomain super.franky.yyy.com dengan alias www.super.franky.yyy.com yang diatur DNS nya di EniesLobby dan mengarah ke Skypie
 
+* Edit file `/etc/bind/jarkom/franky.d15.com` lalu tambahkan subdomain untuk `super.franky.d15.com` yang mengarah ke IP Water7. `vim /etc/bind/jarkom/jarkom2021.com`
+
+* Tambahkan konfigurasi seperti pada gambar ke dalam file `franky.d15.com.`
+(gambar)
+
+* Restart bind9 dengan perintah `service bind9 restart`
+
+* ping ke subdomain dengan perintah berikut dari client Loguetown
+
+``ping super.franky.d15.com
+ATAU
+host -t A super.franky.d15.com``
+(gambar)
+
+
 ### 4. Buat juga reverse domain untuk domain utama 
+* Mengubah isi dari file /etc/bind/named.conf.local pada server EniesLobby dan menambahkan konfigurasi seperti berikut : `vim /etc/bind/named.conf.local`
+Tambahkan reverse dari 3 byte awal dari IP yang ingin dilakukan Reverse DNS. Karena di contoh menggunakan IP 10.40.2 untuk IP dari records, maka reversenya adalah 2.40.10
+
+``zone "2.40.10.in-addr.arpa" {
+    type master;
+    file "/etc/bind/jarkom/2.40.10.in-addr.arpa";
+};``
+(gambar halaman conf nya)
+
+* Copykan file db.local pada path /etc/bind ke dalam folder shiftmodul2 yang baru saja dibuat dan ubah namanya menjadi 2.40.10.in-addr.arpa
+`cp /etc/bind/db.local /etc/bind/jarkom/2.40.10.in-addr.arpa`
+
+* Edit file 77.151.10.in-addr.arpa seperti berikut 
+(gambar)
+
+* Kemudian restart bind9 dengan perintah `service bind9 restart`
+
+* Untuk mengecek apakah konfigurasi sudah benar atau belum, lakukan perintah berikut pada client Loguetown
+`host -t PTR "IP EniesLobby`
+
 
 ### 5. Supaya tetap bisa menghubungi Franky jika server EniesLobby rusak, maka buat Water7 sebagai DNS Slave untuk domain utama
 
+#### Konfigurasi pada EniesLobby
+* Edit file /etc/bind/named.conf.local dan sesuaikan dengan syntax berikut
+
+`zone "franky.d15.com" {
+    type master;
+    notify yes;
+    also-notify { "IP Water7"; }; // Masukan IP Water7 tanpa tanda petik
+    allow-transfer { "IP Water7"; }; // Masukan IP Water7 tanpa tanda petik
+    file "/etc/bind/jarkom/franky.d15.com";
+};`
+(gambar)
+
+* Lakukan restart bind9 `service bind9 restart`
+
+#### Konfigurasi pada Water7
+* Buka Water7 dan update package lists dengan menjalankan command: `apt-get update`
+
+* install aplikasi bind9 pada Water7 dengan `apt-get install bind9 -y`
+
+* Kemudian buka file `/etc/bind/named.conf.local` pada Water7 dan tambahkan syntax berikut:
+
+``zone "franky.d15.com" {
+    type slave;
+    masters { "IP EniesLobby"; }; // Masukan IP EniesLobby tanpa tanda petik
+    file "/var/lib/bind/franky.d15.com";
+};``
+(gambar)
+
+* Lakukan restart bind9 `service bind9 restart`
+
 ### 6. Setelah itu terdapat subdomain mecha.franky.yyy.com dengan alias www.mecha.franky.yyy.com yang didelegasikan dari EniesLobby ke Water7 dengan IP menuju ke Skypie dalam folder sunnygo
+
+#### Konfigurasi pada EniesLobby
+* Pada EniesLobby, edit file /etc/bind/jarkom/franky.d15.com.com dan ubah menjadi seperti di bawah ini sesuai dengan pembagian IP EniesLobby kelompok masing-masing.
+`vim /etc/bind/jarkom/franky.d15.com`
+(gambar)
+
+* Kemudian edit file /etc/bind/named.conf.options pada EniesLobby.
+`vim /etc/bind/named.conf.options`
+(gambar)
+
+* Kemudian comment dnssec-validation auto; dan tambahkan baris berikut pada /etc/bind/named.conf.options `allow-query{any;};`
+(gambar)
+
+* Kemudian edit file /etc/bind/named.conf.local menjadi seperti gambar di bawah:
+
+``zone "franky.d15.com" {
+    type master;
+    file "/etc/bind/jarkom/franky.d15.com";
+    allow-transfer { "IP Water7"; }; // Masukan IP Water7 tanpa tanda petik
+};``
+(gambar)
+
+* Setelah itu restart bind9 `service bind9 restart`
+
+
+#### Konfigurasi pada Water7
+* Pada Water7 edit file /etc/bind/named.conf.options `vim /etc/bind/named.conf.options`
+
+* Kemudian comment dnssec-validation auto; dan tambahkan baris berikut pada /etc/bind/named.conf.options `allow-query{any;};`
+* Lalu edit file /etc/bind/named.conf.local menjadi seperti gambar di bawah:
+(gamabr)
+
+* Kemudian buat direktori dengan nama delegasi, Copy db.local ke direktori delegasi dan edit namanya menjadi mecha.franky.d15.com
+``mkdir /etc/bind/delegasi
+cp /etc/bind/db.local /etc/bind/delegasi/its.jarkom2021.com``
+
+* Kemudian edit file mecha.franky.d15.com menjadi seperti dibawah ini
+(gamabr)
+
+* Restart bind9 `service bind9 restart`
+
 
 ### 7. Untuk memperlancar komunikasi Luffy dan rekannya, dibuatkan subdomain melalui Franky dengan nama general.mecha.frank.yyy.com dengan alias www.general.mecha.franky.yyy.com yang mengarah ke Skypie
 
+#### Konfigurasi di server EniesLobby
+
+* Mengubah isi dari file /etc/bind/delegasi/general.mecha.frank.d15.com seperti gambar berikut :
+(gambar)
+
+* Lakukan restart service bind `service bind9 restart`
+
+* Coba ping di server Loguetown ping general.mecha.frank.d15.com
+(gambar)
+
+
 ### 8. Setelah melakukan konfigurasi server, maka dilakukan konfigurasi Webserver. Pertama dengan webserver www.franky.yyy.com. Pertama, luffy membutuhkan webserver dengan DocumentRoot pada /var/www/franky.yyy.com.
+
+#### Konfigurasi Server Skypie
+
+* Install apache pada uml Skypie dengan command : `apt-get install apache2`
+
+* Install php pada uml Skypie dengan command : `apt-get install php`
+
+* Pindah ke direktori /etc/apache2/sites-available dan copy file 000-default.conf dan rename dengan nama franky.d15.com.
+`cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/franky.d15.com.conf`
+(gambar)
+
+* Edit file franky.d15.com.conf
+(gambar)
+
+* aktifkan dengan command `a2ensite franky.d15.com.`
+
+* Pindah ke direktori /var/www/
+
+* Download file website dengan cara `wget [IP]/franky.com.zip`
+
+* Unzip file yang sudah didownload dan ganti nama file
+(gambar)
+
+* Restart apache : `service apache2 restart`
+
+* Ketika franky.d15.com. diakses, akan menampilkan seperti di gambar berikut
+(gambar)
+
 
 ### 9. Setelah itu, Luffy juga membutuhkan agar url www.franky.yyy.com/index.php/home dapat menjadi menjadi www.franky.yyy.com/home.
 
